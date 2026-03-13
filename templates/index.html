@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Bancario</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 500px; }
+        h1 { color: #102a43; text-align: center; font-size: 24px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .form-group { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-group > div { flex: 1; }
+        label { font-weight: 600; color: #334e68; display: block; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #d9e2ec; border-radius: 8px; box-sizing: border-box; background-color: #f9fbfd; outline: none; transition: 0.2s; }
+        input:focus, select:focus { border-color: #627d98; background-color: white; }
+        button { width: 100%; background: #243b53; color: white; border: none; padding: 15px; margin-top: 20px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #102a43; transform: translateY(-2px); }
+        .ticket { margin-top: 25px; padding: 20px; background: #f0fdf4; border-left: 5px solid #16a34a; border-radius: 8px; line-height: 1.6; }
+        .error { margin-top: 25px; padding: 20px; background: #fef2f2; border-left: 5px solid #dc2626; border-radius: 8px; color: #991b1b; }
+        hr { border: 0; border-top: 1px solid #d1fae5; margin: 10px 0; }
+        .saldo-resaltado { font-size: 1.1em; color: #065f46; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🏦 Portal Bancario</h1>
+        
+        <form method="POST">
+            <div class="form-group">
+                <div>
+                    <label>Tipo de Cuenta</label>
+                    <select name="tipo" required>
+                        <option value="ahorro">Caja de Ahorro</option>
+                        <option value="corriente">Cuenta Corriente</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Fecha Nac. (YYYYMMDD)</label>
+                    <input type="text" name="fecha_nacimiento" placeholder="Ej: 19950520" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div>
+                    <label>Titular</label>
+                    <input type="text" name="titular" required>
+                </div>
+                <div>
+                    <label>DNI</label>
+                    <input type="text" name="dni" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div>
+                    <label>Saldo Inicial ($)</label>
+                    <input type="number" step="0.01" name="saldo_inicial" value="0" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div>
+                    <label>Depositar ($)</label>
+                    <input type="number" step="0.01" name="deposito" value="0">
+                </div>
+                <div>
+                    <label>Extraer ($)</label>
+                    <input type="number" step="0.01" name="extraccion" value="0">
+                </div>
+            </div>
+
+            <button type="submit">Procesar Transacción</button>
+        </form>
+
+        {% if error %}
+            <div class="error">
+                <strong>⚠️ Operación Rechazada:</strong><br> {{ error }}
+            </div>
+        {% endif %}
+
+        {% if ticket %}
+            <div class="ticket">
+                <strong>✅ Transacción Exitosa</strong><br>
+                👤 <b>Titular:</b> {{ ticket.titular }} ({{ ticket.edad }} años)<br>
+                💳 <b>Cuenta:</b> {{ ticket.tipo }}<br>
+                
+                {% if ticket.deposito > 0 %}
+                📥 <b>Monto Depositado:</b> +${{ "%.2f"|format(ticket.deposito) }}<br>
+                {% endif %}
+                
+                {% if ticket.extraccion > 0 %}
+                📤 <b>Monto Extraído:</b> -${{ "%.2f"|format(ticket.extraccion) }}<br>
+                {% endif %}
+
+                {% if ticket.interes %}
+                📈 <b>Interés Generado:</b> ${{ "%.2f"|format(ticket.interes) }}<br>
+                {% endif %}
+
+                <hr>
+                <span class="saldo-resaltado">💰 <b>Saldo Final:</b> ${{ "%.2f"|format(ticket.saldo_final) }}</span>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
